@@ -1,6 +1,6 @@
 # =====================================================================версия 1 =========================================================================
 
-# from aiogram import Bot, Dispatcher
+# from aiogram import Bot, Dispatcher,F
 # from aiogram.filters import Command
 # from aiogram.types import Message
 
@@ -26,6 +26,12 @@
 #         'я пришлю тебе твое сообщение'
 #     )
 
+# @dp.message(F.voice)
+# async def process_sent_voice(message: Message):
+#     # Выводим апдейт в терминал
+#     print(message)
+#     # Отправляем сообщение в чат, откуда пришло голосовое
+#     await message.answer(text='Вы прислали голосовое сообщение!')
 
 # # Этот хэндлер будет срабатывать на любые ваши текстовые сообщения,
 # # кроме команд "/start" и "/help"
@@ -44,8 +50,10 @@
 # BOT_TOKEN='8581071633:AAFEafdUqqXXiJ9XfPW2cUTanxTbWUQqnZA'
 # bot=Bot(token=BOT_TOKEN)
 # dp=Dispatcher()
+
 # async def process_start_command(message: Message):
 #     await message.answer('Привет!\nМеня зовут эхо-бот!\nНапиши мне что-нибудь')
+
 # async def process_help_command(message: Message):
 #     await message.answer(
 #         'Напиши мне что-нибудь и в ответ '
@@ -53,6 +61,14 @@
 #     )
 # async def send_photo_echo(message: Message):
 #     await message.reply_photo(message.photo[0].file_id)
+
+# @dp.message(F.voice)
+# async def process_sent_voice(message: Message):
+#     # Выводим апдейт в терминал
+#     print(message)
+#     # Отправляем сообщение в чат, откуда пришло голосовое
+#     await message.answer(text='Вы прислали голосовое сообщение!')
+
 # async def send_echo(message:Message):
 #     await message.reply(text=message.text)
 
@@ -64,7 +80,7 @@
 # if __name__=='__main__':
 #     dp.run_polling(bot)
 
-# ===================================================================== версия 3 =========================================================================
+# # ===================================================================== версия 3 =========================================================================
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
 from aiogram.types import Message
@@ -93,8 +109,7 @@ async def process_help_command(message: Message):
     )
 
 
-# Этот хэндлер будет срабатывать на любые ваши сообщения,
-# кроме команд "/start" и "/help"
+# Этот хэндлер будет срабатывать на любые ваши сообщения, кроме команд "/start" и "/help"
 @dp.message()
 async def send_echo(message: Message):
     try:
