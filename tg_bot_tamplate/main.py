@@ -1,32 +1,66 @@
+import asyncio
+import logging
+
 from aiogram import Bot, Dispatcher
-from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
+from config_data.config import Config, load_config
+# Импортируем роутеры
 # ...
-
-bot = Bot(token=config.bot.token)
-dp = Dispatcher()
-
-some_var_1 = 1
-some_var_2 = 'Some text'
-
-dp.workflow_data.update({'my_int_var': some_var_1, 'my_text_var': some_var_2})
-
+# Импортируем миддлвари
 # ...
-@router.message(CommandStart())
-async def process_start_command(message: Message, my_int_var, my_text_var):
-    await message.answer(text=str(my_int_var))
-    await message.answer(text=my_text_var)
+# Импортируем вспомогательные функции для создания нужных объектов
+# ...
+from keyboards.main_menu import set_main_menu
+
+# Инициализируем логгер
+logger = logging.getLogger(__name__)
 
 
+# Функция конфигурирования и запуска бота
+async def main():
+    # Конфигурируем логирование
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(filename)s:%(lineno)d #%(levelname)-8s '
+               '[%(asctime)s] - %(name)s - %(message)s'
+    )
+    # Выводим в консоль информацию о начале запуска бота
+    logger.info('Starting bot')
+
+    # Загружаем конфиг в переменную config
+    config: Config = load_config()
+
+    # Инициализируем объект хранилища
+    storage = ...
+
+    # Инициализируем бот и диспетчер
+    bot = Bot(
+        token=config.bot.token,
+        default=DefaultBotProperties(parse_mode=ParseMode.HTML)
+    )
+    dp = Dispatcher(storage=storage)
+
+    # Инициализируем другие объекты (пул соединений с БД, кеш и т.п.)
+    # ...
+
+    # Помещаем нужные объекты в workflow_data диспетчера
+    dp.workflow_data.update(...)
+
+    # Настраиваем главное меню бота
+    await set_main_menu(bot)
+
+    # Регистриуем роутеры
+    logger.info('Подключаем роутеры')
+    # ...
+
+    # Регистрируем миддлвари
+    logger.info('Подключаем миддлвари')
+    # ...
+
+    # Пропускаем накопившиеся апдейты и запускаем polling
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
 
 
-
-
-
-
-
-from config.config import Config, load_config
-
-config: Config = load_config('.env')
-bot_token = config.bot.token           # Сохраняем токен в переменную bot_token
-superadmin = config.bot.admin_ids[0]   # Сохраняем ID админа в переменную superadmin
+asyncio.run(main())
