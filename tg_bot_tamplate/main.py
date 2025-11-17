@@ -4,14 +4,14 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from config_data.config import Config, load_config
+from config.config import Config, load_config
 # Импортируем роутеры
 # ...
 # Импортируем миддлвари
 # ...
 # Импортируем вспомогательные функции для создания нужных объектов
 # ...
-from keyboards.main_menu import set_main_menu
+# from keyboards.main_menu import set_main_menu
 
 # Инициализируем логгер
 logger = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ async def main():
     dp.workflow_data.update(...)
 
     # Настраиваем главное меню бота
-    await set_main_menu(bot)
+    # await set_main_menu(bot)
 
     # Регистриуем роутеры
     logger.info('Подключаем роутеры')
@@ -59,8 +59,8 @@ async def main():
     # ...
 
     # Пропускаем накопившиеся апдейты и запускаем polling
-    await bot.delete_webhook(drop_pending_updates=True)
+    await bot.delete_webhook(drop_pending_updates=True)ы
     await dp.start_polling(bot)
 
 
-asyncio.run(main())
+asyncio.run(main()) 
