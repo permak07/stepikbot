@@ -8,8 +8,8 @@ from aiogram.types import (
     ReplyKeyboardMarkup,
 )
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
-
-bot = Bot(token=os.getenv('BOT_TOKEN'))
+BOT_TOKEN='8581071633:AAFEafdUqqXXiJ9XfPW2cUTanxTbWUQqnZA'
+bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
 # Инициализируем билдер
@@ -30,7 +30,6 @@ keyboard: ReplyKeyboardMarkup = kb_builder.as_markup(
     resize_keyboard=True
 )
 
-
 # Этот хэндлер будет срабатывать на команду "/start"
 @dp.message(CommandStart())
 async def process_start_command(message: Message):
@@ -38,7 +37,6 @@ async def process_start_command(message: Message):
         text='Экспериментируем со специальными кнопками',
         reply_markup=keyboard
     )
-
 
 # Этот хэндлер будет срабатывать на отправку контакта
 @dp.message(F.contact)
