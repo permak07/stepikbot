@@ -7,6 +7,7 @@ from aiogram.enums import ParseMode
 from config.config import Config, load_config
 from handlers.other import other_router
 from handlers.user import user_router
+from keyboards.set_menu import set_main_menu
 
 # Инициализируем логгер
 logger = logging.getLogger(__name__)
@@ -32,6 +33,9 @@ async def main():
     )
     dp = Dispatcher()
 
+    # Настраиваем кнопку Menu
+    await set_main_menu(bot)
+    
     # Регистриуем роутеры в диспетчере
     dp.include_router(user_router)
     dp.include_router(other_router)
