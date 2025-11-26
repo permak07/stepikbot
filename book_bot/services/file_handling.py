@@ -18,11 +18,6 @@ def _get_part_text(text: str, start: int, size: int) -> tuple[str, int]:
     
     return page_text, len(page_text)
 
-text = 'Да? Вы точно уверены? Может быть, вам это показалось?.. Ну, хорошо, приходите завтра, тогда и посмотрим, что можно сделать. И никаких возражений! Завтра, значит, завтра!'
-
-print(*_get_part_text(text, 22, 145), sep='\n')
-
-
 # Функция, формирующая словарь книги
 def prepare_book(path: str, page_size: int = 1050) -> dict[int, str]:
     book = {}
