@@ -2,16 +2,22 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command, CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state, State, StatesGroup
-from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import (CallbackQuery, InlineKeyboardButton,
-                           InlineKeyboardMarkup, Message, PhotoSize)
+from aiogram.fsm.storage.redis import RedisStorage, Redis
+from aiogram.types import (
+    CallbackQuery, InlineKeyboardButton,
+    InlineKeyboardMarkup, Message, PhotoSize
+)
+from redis.asyncio import Redis
 
 # Вместо BOT TOKEN HERE нужно вставить токен вашего бота,
 # полученный у @BotFather
-BOT_TOKEN = 'BOT TOKEN HERE'
+BOT_TOKEN = '8581071633:AAFEafdUqqXXiJ9XfPW2cUTanxTbWUQqnZA'
+
+# Инициализируем Redis
+redis = Redis(host='localhost')
 
 # Инициализируем хранилище (создаем экземпляр класса MemoryStorage)
-storage = MemoryStorage()
+storage = RedisStorage(redis=redis)
 
 # Создаем объекты бота и диспетчера
 bot = Bot(BOT_TOKEN)
@@ -25,7 +31,7 @@ user_dict: dict[int, dict[str, str | int | bool]] = {}
 class FSMFillForm(StatesGroup):
     # Создаем экземпляры класса State, последовательно
     # перечисляя возможные состояния, в которых будет находиться
-    # бот в разные моменты взаимодействия с пользователем
+    # бот в разные моменты взаимодейтсвия с пользователем
     fill_name = State()        # Состояние ожидания ввода имени
     fill_age = State()         # Состояние ожидания ввода возраста
     fill_gender = State()      # Состояние ожидания выбора пола
@@ -97,8 +103,7 @@ async def warning_not_name(message: Message):
         text='То, что вы отправили не похоже на имя\n\n'
              'Пожалуйста, введите ваше имя\n\n'
              'Если вы хотите прервать заполнение анкеты - '
-             'отправьте команду /cancel'
-    )
+             'отправьте команду /cancel')
 
 
 # Этот хэндлер будет срабатывать, если введен корректный возраст
@@ -117,9 +122,14 @@ async def process_age_sent(message: Message, state: FSMContext):
         text='Женский ♀',
         callback_data='female'
     )
+    undefined_button = InlineKeyboardButton(
+        text='🤷 Пока не ясно',
+        callback_data='undefined_gender'
+    )
     # Добавляем кнопки в клавиатуру (две в одном ряду и одну в другом)
     keyboard: list[list[InlineKeyboardButton]] = [
-        [male_button, female_button]
+        [male_button, female_button],
+        [undefined_button]
     ]
     # Создаем объект инлайн-клавиатуры
     markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
@@ -146,7 +156,7 @@ async def warning_not_age(message: Message):
 # Этот хэндлер будет срабатывать на нажатие кнопки при
 # выборе пола и переводить в состояние отправки фото
 @dp.callback_query(StateFilter(FSMFillForm.fill_gender),
-                   F.data.in_(['male', 'female']))
+                   F.data.in_(['male', 'female', 'undefined_gender']))
 async def process_gender_press(callback: CallbackQuery, state: FSMContext):
     # Cохраняем пол (callback.data нажатой кнопки) в хранилище,
     # по ключу "gender"
@@ -325,8 +335,8 @@ async def process_showdata_command(message: Message):
         )
 
 
-# Этот хэндлер будет срабатывать на любые сообщения, кроме тех
-# для которых есть отдельные хэндлеры, вне состояний
+# Этот хэндлер будет срабатывать на любые сообщения в состоянии "по умолчанию",
+# кроме тех, для которых есть отдельные хэндлеры
 @dp.message(StateFilter(default_state))
 async def send_echo(message: Message):
     await message.reply(text='Извините, моя твоя не понимать')
@@ -334,8 +344,7 @@ async def send_echo(message: Message):
 
 # Запускаем поллинг
 if __name__ == '__main__':
-    dp.run_polling(bot)
-    
+    dp.run_polling(bot) 
 # set_state - отвечает за установку состояния FSM.
 # get_state - отвечает за получение текущего состояния.
 # set_data - за добавление данных в словарь, связанный с контекстом. Все старые данные, если они там были, стираются.
